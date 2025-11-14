@@ -1,0 +1,8 @@
+name: 'Senthor'
+type: module
+description: 'Protect your content from AI crawlers and monetize every request with Senthor. Real-time detection, crawler control, and detailed analytics.'
+core_version_requirement: ^10
+package: Custom
+version: 1.0.0
+dependencies:
+  - drupal:system

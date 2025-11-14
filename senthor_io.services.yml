@@ -1,0 +1,10 @@
+services:
+  senthor_io.api_client:
+    class: Drupal\senthor_io\Service\SenthorApiClient
+    arguments: ['@http_client']
+
+  senthor_io.request_subscriber:
+    class: Drupal\senthor_io\EventSubscriber\RequestValidationSubscriber
+    arguments: ['@senthor_io.api_client', '@router.admin_context']
+    tags:
+      - { name: event_subscriber }
