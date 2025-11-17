@@ -3,8 +3,8 @@ services:
     class: Drupal\senthor_io\Service\SenthorApiClient
     arguments: ['@http_client']
 
-  senthor_io.request_subscriber:
-    class: Drupal\senthor_io\EventSubscriber\RequestValidationSubscriber
-    arguments: ['@senthor_io.api_client', '@router.admin_context']
+  senthor_io.middleware.senthor_middleware:
+    class: Drupal\senthor_io\Middleware\SenthorMiddleware
+    arguments: ['@router.admin_context', '@senthor_io.api_client']
     tags:
-      - { name: event_subscriber }
+      - { name: http_middleware }
