@@ -32,7 +32,7 @@ class SenthorMiddleware implements HttpKernelInterface {
 
         // Build body
         $headers = $request->headers->all();
-        $uri = $request->getUri();
+        $uri = $request->getRequestUri();
         $ip = $request->getClientIp();
 
         $sensitive_headers = [
