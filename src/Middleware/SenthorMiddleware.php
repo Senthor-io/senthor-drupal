@@ -2,7 +2,6 @@
 
 namespace Drupal\senthor_io\Middleware;
 
-use Drupal\Core\Routing\AdminContext;
 use Drupal\senthor_io\Service\SenthorApiClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -11,12 +10,10 @@ use Symfony\Component\HttpFoundation\Response;
 class SenthorMiddleware implements HttpKernelInterface {
 
     protected HttpKernelInterface $httpKernel;
-    protected AdminContext $adminContext;
     protected SenthorApiClient $apiClient;
 
-    public function __construct(HttpKernelInterface $kernel, AdminContext $admin_context, SenthorApiClient $api_client) {
+    public function __construct(HttpKernelInterface $kernel, SenthorApiClient $api_client) {
         $this->httpKernel = $kernel;
-        $this->adminContext = $admin_context;
         $this->apiClient = $api_client;
     }
 
@@ -26,7 +23,8 @@ class SenthorMiddleware implements HttpKernelInterface {
             return $this->httpKernel->handle($request, $type, $catch);
         }
 
-        if ($this->adminContext->isAdminRoute() || str_starts_with($request->getPathInfo(), '/admin')) {
+        // Admin context isn't loaded yet
+        if (str_starts_with($request->getPathInfo(), '/admin')) {
             return $this->httpKernel->handle($request, $type, $catch);
         }
 

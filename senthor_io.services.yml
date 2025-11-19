@@ -5,6 +5,6 @@ services:
 
   senthor_io.middleware.senthor_middleware:
     class: Drupal\senthor_io\Middleware\SenthorMiddleware
-    arguments: ['@router.admin_context', '@senthor_io.api_client']
+    arguments: ['@senthor_io.api_client']
     tags:
-      - { name: http_middleware }
+      - { name: http_middleware, priority: 300 }
