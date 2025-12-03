@@ -15,8 +15,17 @@ use Symfony\Component\HttpFoundation\Response;
  * returns a response from Senthor or continues normal request handling.
  */
 class SenthorMiddleware implements HttpKernelInterface {
-
+  /**
+   * The decorated HTTP kernel.
+   *
+   * @var \Symfony\Component\HttpKernel\HttpKernelInterface
+   */
   protected HttpKernelInterface $httpKernel;
+  /**
+   * The Senthor API client.
+   *
+   * @var \Drupal\senthor_io\Service\SenthorApiClient
+   */
   protected SenthorApiClient $apiClient;
 
   public function __construct(HttpKernelInterface $kernel, SenthorApiClient $api_client) {
@@ -25,12 +34,21 @@ class SenthorMiddleware implements HttpKernelInterface {
   }
 
   /**
-   * Constructs a new SenthorMiddleware object.
+   * Handles a request and optionally validates it via Senthor API.
    *
-   * @param \Symfony\Component\HttpKernel\HttpKernelInterface $kernel
-   *   The decorated kernel.
-   * @param \Drupal\senthor\Api\SenthorApiClient $api_client
-   *   The Senthor API client.
+   * Only GET requests to non-admin paths are validated.
+   * If the API returns a 402, the response is returned directly.
+   * Otherwise, the request is passed to the decorated kernel.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
+   * @param int $type
+   *   The request type (usually HttpKernelInterface::MAIN_REQUEST).
+   * @param bool $catch
+   *   Whether to catch exceptions or not.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   The response object.
    */
   public function handle(Request $request, int $type = self::MAIN_REQUEST, bool $catch = TRUE): Response {
     // Filter requests.
