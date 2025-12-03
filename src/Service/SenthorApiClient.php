@@ -12,6 +12,11 @@ use GuzzleHttp\ClientInterface;
  * crawler-related headers.
  */
 class SenthorApiClient {
+  /**
+   * The HTTP client used to send requests to the Senthor API.
+   *
+   * @var \GuzzleHttp\ClientInterface
+   */
   protected $httpClient;
 
   protected const API_URL = 'https://waf-api.senthor.io/api/check-request';
