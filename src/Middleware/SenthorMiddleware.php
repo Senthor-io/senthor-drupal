@@ -78,11 +78,11 @@ class SenthorMiddleware implements HttpKernelInterface {
 
     $api_response = $this->apiClient->validateRequest($filtered_headers, $uri, $ip);
 
-    if (!empty($api_response['status']) && $api_response['status'] === 402) {
+    if (!empty($api_response['status']) && $api_response['status'] === 403) {
       $response = new Response(
-            $api_response['body'] ?? '',
-            402
-        );
+        $api_response['body'] ?? '',
+        403
+      );
 
       if (!empty($api_response['headers']) && is_array($api_response['headers'])) {
         foreach ($api_response['headers'] as $name => $value) {
@@ -93,8 +93,38 @@ class SenthorMiddleware implements HttpKernelInterface {
       return $response;
     }
 
-    // Otherwise, continue normally.
-    return $this->httpKernel->handle($request, $type, $catch);
+    if (!empty($api_response['status']) && $api_response['status'] === 402) {
+      $response = new Response(
+        $api_response['body'] ?? '',
+        402
+      );
+
+      if (!empty($api_response['headers']) && is_array($api_response['headers'])) {
+        foreach ($api_response['headers'] as $name => $value) {
+          $response->headers->set($name, $value);
+        }
+      }
+
+      return $response;
+    }
+
+    $response = $this->httpKernel->handle($request, $type, $catch);
+
+    if (!empty($api_response['status']) && $api_response['status'] === 200) {
+        if (!empty($api_response['headers']) && is_array($api_response['headers'])) {
+            foreach ($api_response['headers'] as $name => $value) {
+                if (strcasecmp($name, 'payment-response') === 0) {
+                    if (is_array($value)) {
+                        $value = implode(', ', $value);
+                    }
+                    $response->headers->set('payment-response', $value);
+                    break;
+                }
+            }
+        }
+    }
+
+    return $response;
   }
 
 }

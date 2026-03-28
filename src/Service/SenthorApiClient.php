@@ -19,7 +19,7 @@ class SenthorApiClient {
    */
   protected $httpClient;
 
-  protected const API_URL = 'https://waf-api.senthor.io/api/check-request';
+  protected const API_URL = 'https://waf-api.senthor.io/api/verify-request';
 
   public function __construct(ClientInterface $http_client) {
     $this->httpClient = $http_client;
@@ -59,11 +59,21 @@ class SenthorApiClient {
         'http_errors' => FALSE,
       ]);
 
+      $restricted_headers = [
+        'content-length',
+        'transfer-encoding',
+        'host',
+        'connection'
+      ];
       $crawlerHeaders = [];
       foreach ($response->getHeaders() as $name => $values) {
-        if (stripos($name, 'crawler-') === 0) {
-          $crawlerHeaders[$name] = implode(', ', $values);
+        if (in_array(strtolower($name), $restricted_headers)) {
+            continue;
         }
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+        $crawlerHeaders[$name] = implode(', ', $values);
       }
 
       return [
