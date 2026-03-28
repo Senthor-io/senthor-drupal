@@ -55,7 +55,7 @@ class SenthorApiClient {
           'request_url' => $uri,
           'client_ip' => $ip,
         ]),
-        'timeout' => 2,
+        'timeout' => 10,
         'http_errors' => FALSE,
       ]);
 
